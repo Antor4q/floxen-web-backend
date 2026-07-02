@@ -6,11 +6,13 @@ interface EnvConfig {
     PORT: string |number;
     DB_URL: string;
     NODE_ENV: string;
-
+    SUPER_ADMIN_EMAIL:string;
+    SUPER_ADMIN_PASSWORD:string;
+    BCRYPT_SALT_ROUND:string;
 }
 
 const loadEnvVariables = () : EnvConfig => {
-    const requiredEnVars: string[] = ["PORT","DB_URL", "NODE_ENV"];
+    const requiredEnVars: string[] = ["PORT","DB_URL", "NODE_ENV", "SUPER_ADMIN_EMAIL", "SUPER_ADMIN_PASSWORD","BCRYPT_SALT_ROUND"];
 
     requiredEnVars.forEach(key =>{
         if(!process.env[key]){
@@ -20,7 +22,10 @@ const loadEnvVariables = () : EnvConfig => {
     return {
         PORT: process.env.PORT as string,
         DB_URL: process.env.DB_URL as string,
-        NODE_ENV: process.env.NODE_ENV as string
+        NODE_ENV: process.env.NODE_ENV as string,
+        SUPER_ADMIN_EMAIL: process.env.SUPER_ADMIN_EMAIL as string,
+        SUPER_ADMIN_PASSWORD: process.env.SUPER_ADMIN_PASSWORD as string,
+        BCRYPT_SALT_ROUND: process.env.BCRYPT_SALT_ROUND as string
     }
 
 }
