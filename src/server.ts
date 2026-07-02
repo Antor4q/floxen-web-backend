@@ -2,6 +2,7 @@ import {Server} from 'http';
 import mongoose from 'mongoose';
 import { envConfig } from './app/config/env';
 import app from './app';
+import { seedSuperAdmin } from './app/utils/seedSuperAdmin';
 
 
 let server: Server;
@@ -18,6 +19,11 @@ const startServer = async() => {
         console.log("Error connecting to mongoDB", error);
     }
 }
+
+(async()=>{
+    startServer();
+seedSuperAdmin();
+})()
 
 // error handlers
 
@@ -61,4 +67,3 @@ process.on("uncaughtException", (error)=>{
 
 
 
-startServer();

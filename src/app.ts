@@ -1,6 +1,8 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
 import { router } from "./app/routes";
+import { globalErrorHandler } from "./app/middleWars/globalErrHandlers";
+import notFound from "./app/middleWars/notFound";
 
 const app = express();
 
@@ -12,5 +14,8 @@ app.use("/api/v1", router)
 app.get("/", (req: Request, res: Response) => {
     res.status(200).json({message: "Hello world!"})
 })
+
+app.use(globalErrorHandler);
+app.use(notFound);
 
 export default app;
