@@ -15,6 +15,14 @@ app.get("/", (req: Request, res: Response) => {
     res.status(200).json({message: "Hello world!"})
 })
 
+// which will be need for every backend --
+/**
+ * globalErrorHandler --
+ * AppError --
+ * JWt --
+ * catchAsync--
+ * **/ 
+
 app.use(globalErrorHandler);
 app.use(notFound);
 
