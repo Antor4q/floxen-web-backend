@@ -5,53 +5,13 @@ import AppError from "../errorHelpers/appError";
 import { TErrorSources, TGenericErrResponse } from "../interfaces/error.interface";
 import mongoose from "mongoose";
 import { envConfig } from "../config/env";
+import { handlerDuplicateError } from "../helpers/handlerDuplicateError";
+import { handleCastError } from "../helpers/handleCastError";
+import { handleZodError } from "../helpers/handleZodError";
+import { handleValidationError } from "../helpers/handleValidationError";
 
 
 
-
-const handlerDuplicateError = (err: any): TGenericErrResponse => {
-  const duplicate = err.message.match(/"([^"]*)"/)
-  return {
-    statusCode : 400,
-    message: `${duplicate[1]} already exists`
-  }
-}
-const handleCastError = (err: mongoose.Error.CastError): TGenericErrResponse => {
-  console.log(err)
-  return {
-    statusCode : 400,
-    message: "Invalid ObjectId"
-  }
-}
-const handleZodError = (err: any): TGenericErrResponse => {
-  const errorSources : TErrorSources[] = []
-  err.issues.forEach((issue:any)=> {
-    errorSources.push({
-      path: issue.path[issue.path.length -1],
-      message: issue.message
-    })
-  })
-  
-  return {
-    statusCode : 400,
-    message: "Zod Error",
-    errorSources
-  }
-}
-const handleValidationError = (err: any): TGenericErrResponse => {
-   const errorSources : TErrorSources[] = []
-   const error = Object.values(err.error)
-   error.forEach((errObject:any) => {
-    errorSources.push({
-      path: errObject.path,
-      message: errObject.message
-    })
-   })
-  return {
-    statusCode : 400,
-    message: "Validation Error"
-  }
-}
 export const globalErrorHandler = async(err: any, req: Request, res: Response, next: NextFunction) => {
   let statusCode = 500
   let message = "Something went wrong"
