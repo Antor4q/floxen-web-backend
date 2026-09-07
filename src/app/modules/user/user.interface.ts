@@ -18,6 +18,7 @@ export interface IAuthProvider {
 export interface IUser {
     name: string;
     email: string;
+    slug?: string;
     password?: string;
     phone?:string;
     address?:string;
