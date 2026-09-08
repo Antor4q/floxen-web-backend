@@ -5,6 +5,9 @@ import { IUser } from "../user/user.interface";
 import { User } from "../user/user.model";
 import httpStatus from "http-status-codes"
 import bcrypt from "bcryptjs";
+import { createUserTokens } from "../../utils/userToken";
+
+import { Response } from "express";
 
 
 const credentialLogin = async(payload: Partial<IUser>) => {
@@ -20,9 +23,15 @@ const credentialLogin = async(payload: Partial<IUser>) => {
         throw new AppError(httpStatus.FORBIDDEN, "Invalid credentials")
     }
 
+    const userTokens = createUserTokens(isUserExist)
+   
+
     const {password:pass, ...rest} = isUserExist.toObject()
 
+
     return {
+        accessToken: userTokens.accessToken,
+        refreshToken: userTokens.refrshToken,
         ...rest
     }
 }
