@@ -3,8 +3,8 @@ import { TErrorSources, TGenericErrResponse } from "../interfaces/error.interfac
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const handleValidationError = (err: any): TGenericErrResponse => {
    const errorSources : TErrorSources[] = []
-   const error = Object.values(err.error)
-   error.forEach((errObject:any) => {
+   const errors = Object.values(err.errors)
+   errors.forEach((errObject:any) => {
     errorSources.push({
       path: errObject.path,
       message: errObject.message
@@ -12,6 +12,7 @@ export const handleValidationError = (err: any): TGenericErrResponse => {
    })
   return {
     statusCode : 400,
-    message: "Validation Error"
+    message: "Validation Error",
+    errorSources
   }
 }

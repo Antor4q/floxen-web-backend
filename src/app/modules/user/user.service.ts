@@ -1,6 +1,6 @@
 import { envConfig } from "../../config/env";
 import AppError from "../../errorHelpers/appError";
-import { IAuthProvider, IUser } from "./user.interface";
+import { IAuthProvider, IUser, Role } from "./user.interface";
 import { User } from "./user.model";
 import bcrypt from "bcryptjs"
 
@@ -11,12 +11,13 @@ const createUser = async(payload: Partial<IUser>) => {
  if(isUserExist){
     throw new AppError( 400, "User already exist")
  }
-const hashedPassword = await bcrypt.hash(password as string, envConfig.BCRYPT_SALT_ROUND)
+const hashedPassword = await bcrypt.hash(password as string, Number(envConfig.BCRYPT_SALT_ROUND))
 const authProvider:IAuthProvider = {provider: "credentials", providerId: email as string}
 
 const user = await User.create({
     email,
     password: hashedPassword,
+    role: Role.USER,
     auths: [authProvider],
     ...rest
 })
