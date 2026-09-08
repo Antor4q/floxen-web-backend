@@ -4,6 +4,7 @@ import { AuthService } from "./auth.service";
 import { sendResponse } from "../../utils/sendResponse";
 import httpStatus from "http-status-codes"
 import { setAuthCookie } from "../../utils/setAuthCookie";
+import AppError from "../../errorHelpers/appError";
 
 const credentialLogin = catchAsync(async(req: Request, res: Response)=> {
     const payload = req.body
@@ -21,8 +22,24 @@ const credentialLogin = catchAsync(async(req: Request, res: Response)=> {
     })
 
 })
+const getNewAccessToken = catchAsync(async(req: Request, res: Response)=> {
+   const refreshToken = req.cookies.refreshToken
+   if(!refreshToken){
+    throw new AppError(httpStatus.BAD_REQUEST, "No refresh token recieved")
+   }
+    const tokenInfo = await AuthService.getNewAccessToken(refreshToken as string)
+     setAuthCookie(res, tokenInfo)
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "New Access Token Retrived Successfully",
+        data: tokenInfo
+    })
+
+})
 
 
 export const AuthControler = {
-    credentialLogin
+    credentialLogin,
+    getNewAccessToken
 }

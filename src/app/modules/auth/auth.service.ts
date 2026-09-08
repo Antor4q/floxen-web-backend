@@ -5,7 +5,7 @@ import { IUser } from "../user/user.interface";
 import { User } from "../user/user.model";
 import httpStatus from "http-status-codes"
 import bcrypt from "bcryptjs";
-import { createUserTokens } from "../../utils/userToken";
+import { createNewAccessTokenWRT, createUserTokens } from "../../utils/userToken";
 
 import { Response } from "express";
 
@@ -35,6 +35,12 @@ const credentialLogin = async(payload: Partial<IUser>) => {
         ...rest
     }
 }
+
+const getNewAccessToken = async(refreshToken: string) => {
+   const accessToken = createNewAccessTokenWRT(refreshToken)
+   return accessToken
+}
 export const AuthService = {
-    credentialLogin
+    credentialLogin,
+    getNewAccessToken
 }
