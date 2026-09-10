@@ -25,6 +25,27 @@ return user
 
 }
 
+
+const getAllUsers = async() => {
+    const users = await User.find()
+    return users
+}
+
+const getSingleUser = async(slug: string) => {
+    const user = await User.findOne({slug}).select("-pasword")
+    return user
+}
+
+const getMe = async (userId:string) => {
+  const user = await User.findById(userId).select("-password");
+  return {
+    data: user
+  };
+};
+
 export const userService = {
-    createUser
+    createUser,
+    getAllUsers,
+    getSingleUser,
+    getMe
 }

@@ -9,8 +9,9 @@ import { IsActive } from "../modules/user/user.interface";
 
 
 
-export const checkAuth = (authRoles: string[]) =>async (req: Request, res: Response, next: NextFunction) => {
+export const checkAuth = (...authRoles: string[]) =>async (req: Request, res: Response, next: NextFunction) => {
    try {
+    
      const accessToken = req.cookies.accessToken
     if(!accessToken){
         throw new AppError(htttpStatus.BAD_REQUEST, "Token not recieved")
@@ -40,7 +41,12 @@ export const checkAuth = (authRoles: string[]) =>async (req: Request, res: Respo
     }
 
    req.user = verifiedToken
-   next()
+
+
+
+
+next();
+
    } catch (error) {
      next(error)
    }
