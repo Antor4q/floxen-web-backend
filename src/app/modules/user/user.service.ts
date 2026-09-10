@@ -1,8 +1,10 @@
+import { JwtPayload } from "jsonwebtoken";
 import { envConfig } from "../../config/env";
 import AppError from "../../errorHelpers/appError";
 import { IAuthProvider, IUser, Role } from "./user.interface";
 import { User } from "./user.model";
 import bcrypt from "bcryptjs"
+import httpStatus from "http-status-codes"
 
 const createUser = async(payload: Partial<IUser>) => {
     const {email, password, ...rest} = payload
@@ -43,9 +45,36 @@ const getMe = async (userId:string) => {
   };
 };
 
+const updateUser = async(userId: string, payload: Partial<IUser>, decodedToken: JwtPayload) => {
+   const isUserExist = await User.findById(userId)
+
+   if(!isUserExist){
+    throw new AppError(httpStatus.BAD_REQUEST, "User does not exist")
+}
+
+ if(payload.role){
+    if(payload.role === Role.USER || decodedToken.role === Role.USER){
+       throw new AppError(httpStatus.BAD_REQUEST, "You're not authorized")
+    
+   }
+if(payload.role === Role.ADMIN || decodedToken.role === Role.SUPER_ADMIN){
+       throw new AppError(httpStatus.BAD_REQUEST, "You're not authorized")
+    
+   }
+ }
+   
+ if(payload.isActive || payload.isDeleted){
+    throw new AppError(httpStatus.BAD_REQUEST, "You're not authorized")
+ }
+
+ const updateUser = await User.findByIdAndUpdate(userId, payload, {new: true,runValidators:true})
+ return updateUser
+}
+
 export const userService = {
     createUser,
     getAllUsers,
     getSingleUser,
-    getMe
+    getMe,
+    updateUser
 }

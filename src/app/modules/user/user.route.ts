@@ -13,7 +13,7 @@ router.post("/create",validateRequest(createUserZodSchema), UserControllers.crea
 router.get("/all-users", checkAuth(Role.ADMIN, Role.SUPER_ADMIN), UserControllers.getAllUsers)
 router.get("/me",checkAuth(...Object.values(Role)),UserControllers.getMe)
 router.get("/:slug", checkAuth(Role.ADMIN, Role.SUPER_ADMIN), UserControllers.getSingleUser)
-// router.patch("/:id",checkAuth(...Object.values(Role)),UserControllers.updateUser)
+router.patch("/:id",checkAuth(...Object.values(Role)),UserControllers.updateUser)
 
 
 export const UserRoutes = router;
