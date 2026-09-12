@@ -45,30 +45,94 @@ const getMe = async (userId:string) => {
   };
 };
 
-const updateUser = async(userId: string, payload: Partial<IUser>, decodedToken: JwtPayload) => {
-   const isUserExist = await User.findById(userId)
+// const updateUser = async(userId: string, payload: Partial<IUser>, decodedToken: JwtPayload) => {
+//    const isUserExist = await User.findById(userId)
 
-   if(!isUserExist){
-    throw new AppError(httpStatus.BAD_REQUEST, "User does not exist")
-}
+//    if(!isUserExist){
+//     throw new AppError(httpStatus.BAD_REQUEST, "User does not exist")
+// }
 
- if(payload.role){
-    if(payload.role === Role.USER || decodedToken.role === Role.USER){
-       throw new AppError(httpStatus.BAD_REQUEST, "You're not authorized")
+//  if(payload.role){
+//     if(payload.role === Role.USER || decodedToken.role === Role.USER){
+//        throw new AppError(httpStatus.BAD_REQUEST, "You're not authorized")
     
-   }
-if(payload.role === Role.ADMIN || decodedToken.role === Role.SUPER_ADMIN){
-       throw new AppError(httpStatus.BAD_REQUEST, "You're not authorized")
+//    }
+// if(payload.role === Role.SUPER_ADMIN || decodedToken.role === Role.ADMIN){
+//        throw new AppError(httpStatus.BAD_REQUEST, "You're not authorized")
     
-   }
- }
+//    }
+  
+//  }
    
- if(payload.isActive || payload.isDeleted){
-    throw new AppError(httpStatus.BAD_REQUEST, "You're not authorized")
- }
+//  if(payload.isActive || payload.isDeleted){
+//     throw new AppError(httpStatus.BAD_REQUEST, "You're not authorized")
+//  }
 
- const updateUser = await User.findByIdAndUpdate(userId, payload, {new: true,runValidators:true})
- return updateUser
+
+
+//  const updateUser = await User.findByIdAndUpdate(userId, payload, {new: true,runValidators:true})
+//  return updateUser
+// }
+
+
+const updateUser = async (userId: string, payload: Partial<IUser>, decodedToken: JwtPayload) => {
+   
+    if(decodedToken.role === Role.USER){
+        if(userId !== decodedToken.userId){
+            throw new AppError(httpStatus.BAD_REQUEST, "You're not authorized")
+        }
+    }
+
+    const ifUserExist = await User.findById(userId);
+
+    if (!ifUserExist) {
+        throw new AppError(httpStatus.NOT_FOUND, "User Not Found")
+    }
+
+    if(decodedToken.role === Role.ADMIN || ifUserExist.role === Role.SUPER_ADMIN){
+        throw new AppError(httpStatus.BAD_REQUEST, "You're not authorized")
+    }
+
+  
+    /**
+     * email - can not update
+     * name, phone, password address
+     * password - re hashing
+     *  only admin superadmin - role, isDeleted...
+     * 
+     * promoting to superadmin - superadmin
+     */
+
+    if(payload.role){
+        if(decodedToken.role === Role.USER){
+            throw new AppError(httpStatus.BAD_REQUEST, "You're not authorized")
+        }
+        if(payload.role === Role.SUPER_ADMIN && decodedToken.role === Role.ADMIN){
+            throw new AppError(httpStatus.BAD_REQUEST, "You're not authorized")
+            
+        }
+    }
+    
+    if(payload.isActive || payload.isDeleted || payload.isVerified){
+        if(decodedToken.role === Role.USER){
+            throw new AppError(httpStatus.BAD_REQUEST, "You're not authorized")
+            
+        }
+    }
+    
+    if(payload.email){
+        throw new AppError(httpStatus.BAD_REQUEST, "Email cannot be change")
+
+    }
+    if(payload.password){
+        throw new AppError(httpStatus.BAD_REQUEST, "Password cannot be updated here")
+
+    }
+
+
+    const newUpdatedUser = await User.findByIdAndUpdate(userId, payload, { new: true, runValidators: true })
+
+    return newUpdatedUser
 }
 
 export const userService = {
