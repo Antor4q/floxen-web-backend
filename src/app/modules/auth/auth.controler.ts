@@ -1,4 +1,5 @@
-import { Request, Response } from "express";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { NextFunction, Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
 import { AuthService } from "./auth.service";
 import { sendResponse } from "../../utils/sendResponse";
@@ -42,7 +43,28 @@ const getNewAccessToken = catchAsync(async(req: Request, res: Response) => {
     })
 })
 
+const logOut = catchAsync(async(req: Request, res: Response, next: NextFunction)=> {
+    res.clearCookie("accessToken", {
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax"
+    })
+    res.clearCookie("refreshToken", {
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax"
+    })
+
+     sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "You're log out successfully",
+        data: null
+    })
+})
+
 export const AuthControler = {
     credentialLogin,
-    getNewAccessToken
+    getNewAccessToken,
+    logOut
 }
