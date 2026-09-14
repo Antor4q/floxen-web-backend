@@ -8,6 +8,7 @@ import { setAuthCookie } from "../../utils/setAuthCookie";
 import AppError from "../../errorHelpers/appError";
 import { createUserTokens } from "../../utils/userToken";
 import { envConfig } from "../../config/env";
+import { JwtPayload } from "jsonwebtoken";
 
 
 const credentialLogin = catchAsync(async(req: Request, res: Response)=> {
@@ -84,10 +85,36 @@ const googleCallBack = catchAsync(async(req: Request, res: Response, next: NextF
 
    res.redirect (`${envConfig.FRONTEND_URL}/${redirectUrl}`)
 })
+const changePassword = catchAsync(async(req: Request, res: Response, next: NextFunction)=> {
+//   
+ const {newPassword, oldPassword} = req.body
+ const decodedToken = req.user
+ await AuthService.changePassword(oldPassword,newPassword, decodedToken as JwtPayload)
+  sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Your password changed successfully",
+        data: null
+    })
+ 
+})
+const setPassword = catchAsync(async(req: Request, res: Response, next: NextFunction)=> {
+//    
+})
+const forgotPassword = catchAsync(async(req: Request, res: Response, next: NextFunction)=> {
+//   
+})
+const resetPassword = catchAsync(async(req: Request, res: Response, next: NextFunction)=> {
+//   
+})
 
 export const AuthControler = {
     credentialLogin,
     getNewAccessToken,
     logOut,
-    googleCallBack
+    googleCallBack,
+    resetPassword,
+    forgotPassword,
+    changePassword,
+    setPassword
 }

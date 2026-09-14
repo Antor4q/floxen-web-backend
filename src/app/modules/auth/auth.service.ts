@@ -7,7 +7,9 @@ import httpStatus from "http-status-codes"
 import bcrypt from "bcryptjs";
 import { createNewUserTokenWRT, createUserTokens } from "../../utils/userToken";
 
-import { Response } from "express";
+import { NextFunction, Response } from "express";
+import { JwtPayload } from "jsonwebtoken";
+import { envConfig } from "../../config/env";
 
 
 const credentialLogin = async(payload: Partial<IUser>) => {
@@ -40,7 +42,42 @@ const getNewAccessToken = async(refreshToken: string) => {
    const accessToken = createNewUserTokenWRT(refreshToken)
    return accessToken
 }
+
+const changePassword =async(oldPassword: string, newPassword: string, decodedToken: JwtPayload)=> {
+ const user = await User.findById(decodedToken.userId)
+
+ if(!user){
+    throw new AppError(httpStatus.BAD_REQUEST, "User not found")
+}
+
+const matchPassword = await bcrypt.compare(oldPassword, user.password as string)
+
+if(!matchPassword){
+     throw new AppError(httpStatus.BAD_REQUEST, "Invalid credential, old password does not match")
+
+ }
+
+ user.password = await bcrypt.hash(newPassword as string, Number(envConfig.BCRYPT_SALT_ROUND))
+ await user.save()
+ 
+}
+const setPassword =async(req: Request, res: Response, next: NextFunction)=> {
+//    
+}
+const forgotPassword = async(req: Request, res: Response, next: NextFunction)=> {
+//   
+}
+const resetPassword = async(req: Request, res: Response, next: NextFunction)=> {
+//   
+}
+ //  verify user => match old pass => hash new pass => save
+ //  user verify => check password already set or not => hash pass => make provider => declare all provider => set pass and auth and save
+
 export const AuthService = {
     credentialLogin,
-    getNewAccessToken
+    getNewAccessToken,
+    resetPassword,
+    forgotPassword,
+    changePassword,
+    setPassword
 }
