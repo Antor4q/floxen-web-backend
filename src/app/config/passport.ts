@@ -58,6 +58,8 @@ passport.use(
     )
 )
 
+console.log("GOOGLE STRATEGY REGISTERED");
+
 
 passport.serializeUser((user:any, done:(err: any, id?: unknown)=> void) => {
   done(null, user.id);

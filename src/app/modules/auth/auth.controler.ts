@@ -6,6 +6,8 @@ import { sendResponse } from "../../utils/sendResponse";
 import httpStatus from "http-status-codes"
 import { setAuthCookie } from "../../utils/setAuthCookie";
 import AppError from "../../errorHelpers/appError";
+import { createUserTokens } from "../../utils/userToken";
+import { envConfig } from "../../config/env";
 
 
 const credentialLogin = catchAsync(async(req: Request, res: Response)=> {
@@ -62,9 +64,30 @@ const logOut = catchAsync(async(req: Request, res: Response, next: NextFunction)
         data: null
     })
 })
+const googleCallBack = catchAsync(async(req: Request, res: Response, next: NextFunction)=> {
+   let redirectUrl = ""
+
+   if(typeof req.query.state === "string"){
+     redirectUrl = req.query.state
+     if(redirectUrl.startsWith("/")){
+        redirectUrl = redirectUrl.slice(1)
+     }
+   }
+
+   const user = req.user
+   if(!user){
+    throw new AppError(httpStatus.BAD_REQUEST, "User doesn not exist")
+   }
+
+   const tokenInfo = createUserTokens(user)
+   setAuthCookie(res, tokenInfo)
+
+   res.redirect (`${envConfig.FRONTEND_URL}/${redirectUrl}`)
+})
 
 export const AuthControler = {
     credentialLogin,
     getNewAccessToken,
-    logOut
+    logOut,
+    googleCallBack
 }

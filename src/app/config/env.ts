@@ -16,10 +16,11 @@ interface EnvConfig {
     GOOGLE_CLIENT_ID: string;
     GOOGLE_CLIENT_SECRET: string;
     GOOGLE_CALLBACK_URL: string;
+    FRONTEND_URL: string;
 }
 
 const loadEnvVariables = () : EnvConfig => {
-    const requiredEnVars: string[] = ["PORT","DB_URL", "NODE_ENV", "SUPER_ADMIN_EMAIL", "SUPER_ADMIN_PASSWORD","BCRYPT_SALT_ROUND", "JWT_ACCESS_SECRET", "JWT_REFRESH_SECRET", "JWT_ACCESS_EXPIRES", "JWT_REFRESH_EXPIRES","GOOGLE_CLIENT_ID","GOOGLE_CLIENT_SECRET","GOOGLE_CALLBACK_URL"];
+    const requiredEnVars: string[] = ["PORT","DB_URL", "NODE_ENV", "SUPER_ADMIN_EMAIL", "SUPER_ADMIN_PASSWORD","BCRYPT_SALT_ROUND", "JWT_ACCESS_SECRET", "JWT_REFRESH_SECRET", "JWT_ACCESS_EXPIRES", "JWT_REFRESH_EXPIRES","GOOGLE_CLIENT_ID","GOOGLE_CLIENT_SECRET","GOOGLE_CALLBACK_URL","FRONTEND_URL"];
 
     requiredEnVars.forEach(key =>{
         if(!process.env[key]){
@@ -40,6 +41,7 @@ const loadEnvVariables = () : EnvConfig => {
         GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID as string,
         GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET as string,
         GOOGLE_CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL as string,
+        FRONTEND_URL: process.env.FRONTEND_URL as string,
     }
 
 }
