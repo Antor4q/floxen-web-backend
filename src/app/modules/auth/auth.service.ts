@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import AppError from "../../errorHelpers/appError";
-import { IUser } from "../user/user.interface";
+import { IAuthProvider, IUser } from "../user/user.interface";
 import { User } from "../user/user.model";
 import httpStatus from "http-status-codes"
 import bcrypt from "bcryptjs";
@@ -61,8 +61,29 @@ if(!matchPassword){
  await user.save()
  
 }
-const setPassword =async(req: Request, res: Response, next: NextFunction)=> {
-//    
+const setPassword =async(userId : string, password: string)=> {
+ const user = await User.findById(userId)
+  if(!user){
+    throw new AppError(httpStatus.BAD_REQUEST, "User not found")
+}
+
+if(user.password && user.auths.some(providerOb => providerOb.provider === "google")) {
+     throw new AppError(httpStatus.BAD_REQUEST, "You have already set password")
+
+ }   
+ 
+ const hashedPass = await bcrypt.hash(password, Number(envConfig.BCRYPT_SALT_ROUND))
+
+ const credentialProvider: IAuthProvider = {
+    provider: "credentials",
+    providerId: user.email
+ }
+
+ const auths: IAuthProvider[] = [...user.auths, credentialProvider]
+ user.password = hashedPass
+ user.auths = auths
+ await user.save()
+
 }
 const forgotPassword = async(req: Request, res: Response, next: NextFunction)=> {
 //   

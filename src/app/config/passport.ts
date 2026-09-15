@@ -16,24 +16,40 @@ passport.use(
       try {
        
         const email = profile.emails?.[0].value;
-        if(!email){
-            return done(null, false, {message: "Email not found"})
-        }
-        
-        let isUserExist = await User.findOne({email})
-        
-        if(isUserExist && isUserExist.isVerified === false){
-            return done(null, false, {message: "User is not verified"})
+        if (!email) {
+  console.log("❌ Email not found");
+  return done(null, false, { message: "Email not found" });
+}
 
-        }
-        if(isUserExist && (isUserExist.isActive === IsActive.INACTIVE || isUserExist?.isActive === IsActive.BLOCKED)){
-            return done(null, false, {message: `User is ${isUserExist.isActive}`})
+let isUserExist = await User.findOne({ email });
 
-        }
-        if(isUserExist && isUserExist.isDeleted === true){
-            return done(null, false, {message: `User is deleted`})
+console.log("Google email:", email);
+console.log("Existing user:", isUserExist);
 
-        }
+if (isUserExist && isUserExist.isVerified === false) {
+  console.log("❌ User not verified");
+  return done(null, false, { message: "User is not verified" });
+}
+
+if (
+  isUserExist &&
+  (
+    isUserExist.isActive === IsActive.INACTIVE ||
+    isUserExist.isActive === IsActive.BLOCKED
+  )
+) {
+  console.log("❌ User inactive/blocked:", isUserExist.isActive);
+  return done(null, false, {
+    message: `User is ${isUserExist.isActive}`,
+  });
+}
+
+if (isUserExist && isUserExist.isDeleted === true) {
+  console.log("❌ User deleted");
+  return done(null, false, {
+    message: "User is deleted",
+  });
+}
 
         if(!isUserExist){
             isUserExist = await User.create({
@@ -52,6 +68,7 @@ passport.use(
 
         return done(null, isUserExist);
       } catch (error) {
+          console.log("❌ Google strategy error:", error);
         return done(error, false);
       }
     }

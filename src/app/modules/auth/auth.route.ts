@@ -17,8 +17,8 @@ router.post("/reset-password",checkAuth(...Object.values(Role)), AuthControler.r
 router.get("/google", async(req: Request, res: Response,next: NextFunction)=> {
 
     const redirect = req.params.redirect || "/"
-    passport.authenticate("google", {scope: ["profile", "email"], state: redirect as string})(req,res,next)
-})
+    passport.authenticate("google", {scope: ["profile", "email"], state: redirect as string})(req,res,next)}
+)
 router.get("/google/callback", passport.authenticate("google",{failureRedirect: `${envConfig.FRONTEND_URL}/login?error=There is something wrong. Please contact with our support team`}), AuthControler.googleCallBack)
 
 
