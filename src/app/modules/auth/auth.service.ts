@@ -1,15 +1,18 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import AppError from "../../errorHelpers/appError";
-import { IAuthProvider, IUser } from "../user/user.interface";
+import { IAuthProvider, IsActive, IUser } from "../user/user.interface";
 import { User } from "../user/user.model";
 import httpStatus from "http-status-codes"
 import bcrypt from "bcryptjs";
 import { createNewUserTokenWRT, createUserTokens } from "../../utils/userToken";
 
 import { NextFunction, Response } from "express";
-import { JwtPayload } from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { envConfig } from "../../config/env";
+import { sendEmail } from "../../utils/sendEmail";
+
+
 
 
 const credentialLogin = async(payload: Partial<IUser>) => {
@@ -85,8 +88,37 @@ if(user.password && user.auths.some(providerOb => providerOb.provider === "googl
  await user.save()
 
 }
-const forgotPassword = async(req: Request, res: Response, next: NextFunction)=> {
-//   
+const forgotPassword = async(email: string)=> {
+ const isUserExist = await User.findOne({email})
+  if(!isUserExist){
+        throw new AppError(httpStatus.BAD_REQUEST, "User does not exist")
+    }
+     if(isUserExist.isActive === IsActive.INACTIVE || isUserExist.isActive === IsActive.BLOCKED){
+        throw new AppError(httpStatus.BAD_REQUEST, `User is ${isUserExist.isActive}`)
+    }
+     if(isUserExist.isDeleted){
+        throw new AppError(httpStatus.BAD_REQUEST, `User is deleted`)
+    }
+
+    const jwtPayload = {
+        userId: isUserExist._id,
+        email: isUserExist.email,
+        role: isUserExist.role
+    }
+
+    const resetToken = jwt.sign(jwtPayload, envConfig.JWT_ACCESS_SECRET, {expiresIn:"10m"})
+    const resetUiLink = `${envConfig.FRONTEND_URL}/reset-password?id=${isUserExist._id}&&token=${resetToken}`
+
+    sendEmail({
+        to: isUserExist.email,
+        subject: "Password reset",
+        templateName: "forgotPassword",
+        templateData: {
+            name: isUserExist.name,
+            resetUiLink
+        }
+    })
+
 }
 const resetPassword = async(req: Request, res: Response, next: NextFunction)=> {
 //   
