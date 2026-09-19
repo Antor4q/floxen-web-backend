@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import AppError from "../../errorHelpers/appError";
@@ -108,7 +109,7 @@ const forgotPassword = async(email: string)=> {
 
     const resetToken = jwt.sign(jwtPayload, envConfig.JWT_ACCESS_SECRET, {expiresIn:"10m"})
     const resetUiLink = `${envConfig.FRONTEND_URL}/reset-password?id=${isUserExist._id}&&token=${resetToken}`
-
+ console.log(isUserExist,"from auth forgot")
     sendEmail({
         to: isUserExist.email,
         subject: "Password reset",
@@ -120,8 +121,22 @@ const forgotPassword = async(email: string)=> {
     })
 
 }
-const resetPassword = async(req: Request, res: Response, next: NextFunction)=> {
-//   
+const resetPassword = async(  payload: Record<string, any>,
+  decodedToken: JwtPayload)=> {
+  
+  if(payload.id !== decodedToken.userId){
+    throw new AppError(httpStatus.BAD_REQUEST, "You can not reset your password")
+  }
+  
+  const isUserExist = await User.findById(decodedToken.userId)
+  if(!isUserExist){
+    throw new AppError(httpStatus.BAD_REQUEST, "User does not found")
+  }
+
+  const hashedPassword = await bcrypt.hash(payload.password as string, Number(envConfig.BCRYPT_SALT_ROUND))
+  isUserExist.password = hashedPassword;
+  await isUserExist.save();
+
 }
  //  verify user => match old pass => hash new pass => save
  //  user verify => check password already set or not => hash pass => make provider => declare all provider => set pass and auth and save
