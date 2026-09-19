@@ -12,7 +12,7 @@ router.post("/refresh-token", AuthControler.getNewAccessToken )
 router.post("/logOut", AuthControler.logOut)
 router.post("/change-password",checkAuth(...Object.values(Role)), AuthControler.changePassword)
 router.post("/set-password",checkAuth(...Object.values(Role)), AuthControler.setPassword)
-router.post("/forgot-password",checkAuth(...Object.values(Role)), AuthControler.forgotPassword)
+router.post("/forgot-password", AuthControler.forgotPassword)
 router.post("/reset-password",checkAuth(...Object.values(Role)), AuthControler.resetPassword)
 router.get("/google", async(req: Request, res: Response,next: NextFunction)=> {
 

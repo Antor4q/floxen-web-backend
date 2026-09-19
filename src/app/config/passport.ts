@@ -57,6 +57,7 @@ if (isUserExist && isUserExist.isDeleted === true) {
                 email,
                 role: Role.USER,
                 picture: profile.photos?.[0].value,
+                isVerified: true,
                 auths:[
                     {
                         provider: "google",

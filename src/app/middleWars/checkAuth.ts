@@ -12,7 +12,8 @@ import { IsActive } from "../modules/user/user.interface";
 export const checkAuth = (...authRoles: string[]) =>async (req: Request, res: Response, next: NextFunction) => {
    try {
     
-     const accessToken = req.cookies.accessToken
+    //  const accessToken = req.cookies.accessToken
+     const accessToken = req.headers.authorization
     if(!accessToken){
         throw new AppError(htttpStatus.BAD_REQUEST, "Token not recieved")
     }
@@ -22,11 +23,11 @@ export const checkAuth = (...authRoles: string[]) =>async (req: Request, res: Re
       if(!verifiedToken){
         throw new AppError(htttpStatus.BAD_REQUEST, "Forbidden token not verified")
     }
-
+ console.log(verifiedToken,"checkAuth")
     const isUserExist = await User.findOne({email: verifiedToken.email})
 
      if(!isUserExist){
-        throw new AppError(htttpStatus.BAD_REQUEST, "User does not exist")
+        throw new AppError(htttpStatus.BAD_REQUEST, "User does not exist from check")
     }
      if(isUserExist.isActive === IsActive.INACTIVE || isUserExist.isActive === IsActive.BLOCKED){
         throw new AppError(htttpStatus.BAD_REQUEST, `User is ${isUserExist.isActive}`)
