@@ -23,10 +23,7 @@ const categorySchema = new Schema<ICategory>(
       trim: true,
     },
 
-    icon: {
-      type: String,
-      trim: true,
-    },
+   
 
     isActive: {
       type: String,

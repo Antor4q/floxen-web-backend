@@ -15,7 +15,7 @@ export interface ICategory {
   name: IName;
   slug?: string;
   description?: string;
-  icon?: string;
+ 
   isActive?: IActive;
   createdAt?: Date;
   updatedAt?: Date;

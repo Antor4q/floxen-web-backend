@@ -22,11 +22,6 @@ export const createCategoryValidationSchema = z.object({
       .trim()
       .optional(),
 
-    icon: z
-      .string()
-      .trim()
-      .optional(),
-
     isActive: z
       .enum(["ACTIVE", "INACTIVE"])
       .default("ACTIVE")
