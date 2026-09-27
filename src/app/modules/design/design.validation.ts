@@ -1,8 +1,7 @@
 import { z } from "zod";
 
 export const createDesignValidationSchema = z.object({
-  body: z.object({
-    title: z
+  title: z
       .string()
       .min(1, "Title is required")
       .trim(),
@@ -17,7 +16,7 @@ export const createDesignValidationSchema = z.object({
       .trim()
       .optional(),
 
-    type: z.enum(["SECTION", "COMPONENT", "PAGE"]),
+    // type: z.enum(["SECTION", "COMPONENT", "PAGE"]),
 
     category: z
       .string()
@@ -68,5 +67,62 @@ export const createDesignValidationSchema = z.object({
       .int()
       .min(0)
       .default(0),
-  }),
+});
+
+
+export const updateDesignValidationSchema = z.object({
+  title: z
+    .string()
+    .min(1, "Title is required")
+    .trim()
+    .optional(),
+
+  slug: z
+    .string()
+    .trim()
+    .min(1, "Slug cannot be empty")
+    .optional(),
+
+  description: z
+    .string()
+    .trim()
+    .optional(),
+
+  category: z
+    .string()
+    .regex(/^[0-9a-fA-F]{24}$/, "Invalid category ID")
+    .optional(),
+
+  tags: z
+    .array(z.string().trim())
+    .optional(),
+
+  technologies: z
+    .array(z.string().trim())
+    .optional(),
+
+  previewVideo: z
+    .string()
+    .url("Invalid preview video URL")
+    .optional(),
+
+  sourceFile: z
+    .string()
+    .min(1, "Source file is required")
+    .trim()
+    .optional(),
+
+  prompt: z
+    .string()
+    .min(1, "Prompt is required")
+    .trim()
+    .optional(),
+
+  isFree: z
+    .boolean()
+    .optional(),
+
+  status: z
+    .enum(["DRAFT", "PUBLISHED", "ARCHIVED"])
+    .optional(),
 });

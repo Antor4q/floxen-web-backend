@@ -17,7 +17,7 @@ export interface IDesign {
   slug: string;
   description?: string;
 
-  type: DesignType;
+  // type: DesignType;
 
   category: Types.ObjectId;
   tags: string[];
