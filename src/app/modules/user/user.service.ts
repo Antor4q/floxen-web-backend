@@ -134,11 +134,37 @@ const updateUser = async (userId: string, payload: Partial<IUser>, decodedToken:
 
     return newUpdatedUser
 }
+const deleteUser = async (userId: string, decodedToken: JwtPayload) => {
+   
+    if(decodedToken.role === Role.USER){
+        
+            throw new AppError(httpStatus.BAD_REQUEST, "You're not authorized")
+            
+        }
+        
+        if(decodedToken.role !== Role.ADMIN && decodedToken.role !== Role.SUPER_ADMIN){
+        throw new AppError(httpStatus.BAD_REQUEST, "You're not authorized")
+
+    }
+
+    const ifUserExist = await User.findById(userId);
+
+    if (!ifUserExist) {
+        throw new AppError(httpStatus.NOT_FOUND, "User Not Found")
+    }
+
+    const delUser = await User.findByIdAndDelete(userId)
+
+  return delUser
+
+}
+
 
 export const userService = {
     createUser,
     getAllUsers,
     getSingleUser,
     getMe,
-    updateUser
+    updateUser,
+    deleteUser
 }

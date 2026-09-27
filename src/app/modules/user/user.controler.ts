@@ -63,6 +63,19 @@ const updateUser = catchAsync( async(req: Request, res: Response) => {
         data:user
     })
 })
+const deleteUser = catchAsync( async(req: Request, res: Response) => {
+    const userId = req.params.id
+    
+    const verifiedToken = req.user
+    const user = await userService.deleteUser(userId as string , verifiedToken as JwtPayload)
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Userd deleted successfully",
+        data:user
+    })
+})
 
 
 
@@ -72,5 +85,6 @@ export const UserControllers = {
     getAllUsers,
     getSingleUser,
     getMe,
-    updateUser
+    updateUser,
+    deleteUser
 }
