@@ -8,6 +8,7 @@ import cookieParser from "cookie-parser";
 import expressSession from "express-session"
 import passport from "passport";
 import "./app/config/passport"
+import { envConfig } from "./app/config/env";
 
 
 const app = express();
@@ -22,7 +23,14 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(express.json());
-app.use(cors());
+
+
+app.use(
+  cors({
+    origin: envConfig.FRONTEND_URL,
+    credentials: true,
+  })
+);
 app.use(cookieParser());
 
 app.use("/api/v1", router)

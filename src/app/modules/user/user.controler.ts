@@ -28,13 +28,13 @@ const getAllUsers = catchAsync( async(req: Request, res: Response) => {
 })
 const getMe = catchAsync(async(req: Request, res: Response, next: NextFunction)=>{
     const decodedToken = req.user as JwtPayload;
-    console.log(decodedToken)
+
     const result = await userService.getMe(decodedToken.userId);
   
     sendResponse(res, {
-        success: false,
+        success: true,
         statusCode: httpStatus.OK,
-        message: "All Users Retrieved Successfully",
+        message: "User Retrieved Successfully",
         data: result.data,
         // meta: {}
     })
@@ -50,16 +50,30 @@ const getSingleUser = catchAsync( async(req: Request, res: Response) => {
         data:user
     })
 })
-const updateUser = catchAsync( async(req: Request, res: Response) => {
+// const updateUser = catchAsync( async(req: Request, res: Response) => {
+//     const userId = req.params.id
+//     const payload = req.body
+//     const verifiedToken = req.user
+//     console.log("uid", userId, payload, verifiedToken)
+//     const user = await userService.updateUser(userId as string , payload, verifiedToken as JwtPayload)
+
+//     sendResponse(res, {
+//         statusCode: httpStatus.OK,
+//         success: true,
+//         message: "Userd retrived successfully",
+//         data:user
+//     })
+// })
+const deleteUser = catchAsync( async(req: Request, res: Response) => {
     const userId = req.params.id
-    const payload = req.body
+    
     const verifiedToken = req.user
-    const user = await userService.updateUser(userId as string , payload, verifiedToken as JwtPayload)
+    const user = await userService.deleteUser(userId as string , verifiedToken as JwtPayload)
 
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: "Userd retrived successfully",
+        message: "Userd deleted successfully",
         data:user
     })
 })
@@ -72,5 +86,6 @@ export const UserControllers = {
     getAllUsers,
     getSingleUser,
     getMe,
-    updateUser
+    // updateUser,
+    deleteUser
 }

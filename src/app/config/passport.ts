@@ -56,6 +56,7 @@ if (isUserExist && isUserExist.isDeleted === true) {
                 name: profile.displayName,
                 email,
                 role: Role.USER,
+                
                 picture: profile.photos?.[0].value,
                 isVerified: true,
                 auths:[
