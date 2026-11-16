@@ -75,65 +75,39 @@ const getMe = async (userId:string) => {
 // }
 
 
-const updateUser = async (userId: string, payload: Partial<IUser>, decodedToken: JwtPayload) => {
-   
-    if(decodedToken.role === Role.USER){
-        if(userId !== decodedToken.userId){
-            throw new AppError(httpStatus.BAD_REQUEST, "You're not authorized")
-        }
-    }
+// const updateUser = async (
+//   userId: string,
+//   payload: Partial<IUser>,
+//   decodedToken: JwtPayload
+// ) => {
+//   // User can update only their own profile
+//   if (decodedToken.role === Role.USER && userId !== decodedToken.userId) {
+//     throw new AppError(httpStatus.FORBIDDEN, "You're not authorized");
+//   }
 
-    const ifUserExist = await User.findById(userId);
+//   const ifUserExist = await User.findById(userId);
 
-    if (!ifUserExist) {
-        throw new AppError(httpStatus.NOT_FOUND, "User Not Found")
-    }
+//   if (!ifUserExist) {
+//     throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
+//   }
+// console.log(payload, "from user services")
+//   const data = {
+//     name: payload.name,
+//     picture:payload.picture
+//   }
+//  console.log(data,"data from user update serivce")
+// //   const newUpdatedUser = await User.findByIdAndUpdate(
+// //     userId,
+// //     data,
+// //     {
+// //       new: true,
+// //       runValidators: true,
+// //     }
+// //   );
 
-    if(decodedToken.role === Role.ADMIN || ifUserExist.role === Role.SUPER_ADMIN){
-        throw new AppError(httpStatus.BAD_REQUEST, "You're not authorized")
-    }
+// //   return newUpdatedUser;
+// };
 
-  
-    /**
-     * email - can not update
-     * name, phone, password address
-     * password - re hashing
-     *  only admin superadmin - role, isDeleted...
-     * 
-     * promoting to superadmin - superadmin
-     */
-
-    if(payload.role){
-        if(decodedToken.role === Role.USER){
-            throw new AppError(httpStatus.BAD_REQUEST, "You're not authorized")
-        }
-        if(payload.role === Role.SUPER_ADMIN && decodedToken.role === Role.ADMIN){
-            throw new AppError(httpStatus.BAD_REQUEST, "You're not authorized")
-            
-        }
-    }
-    
-    if(payload.isActive || payload.isDeleted || payload.isVerified){
-        if(decodedToken.role === Role.USER){
-            throw new AppError(httpStatus.BAD_REQUEST, "You're not authorized")
-            
-        }
-    }
-    
-    if(payload.email){
-        throw new AppError(httpStatus.BAD_REQUEST, "Email cannot be change")
-
-    }
-    if(payload.password){
-        throw new AppError(httpStatus.BAD_REQUEST, "Password cannot be updated here")
-
-    }
-
-
-    const newUpdatedUser = await User.findByIdAndUpdate(userId, payload, { new: true, runValidators: true })
-
-    return newUpdatedUser
-}
 const deleteUser = async (userId: string, decodedToken: JwtPayload) => {
    
     if(decodedToken.role === Role.USER){
@@ -165,6 +139,6 @@ export const userService = {
     getAllUsers,
     getSingleUser,
     getMe,
-    updateUser,
+    // updateUser,
     deleteUser
 }

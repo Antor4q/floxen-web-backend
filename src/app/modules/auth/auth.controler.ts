@@ -121,16 +121,29 @@ const forgotPassword = catchAsync(async(req: Request, res: Response, next: NextF
     })
  
 })
-const resetPassword = catchAsync(async(req: Request, res: Response, next: NextFunction)=> {
- const decodedToken = req.user
- await AuthService.resetPassword(req.body, decodedToken as JwtPayload)
- sendResponse(res, {
-        success: true,
-        statusCode: httpStatus.OK,
-        message: "Password reset Successfully",
-        data: null,
-    })
-})
+
+const resetPassword = catchAsync(
+  async (req: Request, res: Response) => {
+    const decodedToken = req.user;
+
+    const loginInfo = await AuthService.resetPassword(
+      req.body,
+      decodedToken as JwtPayload
+    );
+
+    setAuthCookie(res, {
+      accessToken: loginInfo.accessToken,
+      refreshToken: loginInfo.refreshToken,
+    });
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Password reset successfully. You're now logged in.",
+      data: loginInfo,
+    });
+  }
+);
 
 export const AuthControler = {
     credentialLogin,
