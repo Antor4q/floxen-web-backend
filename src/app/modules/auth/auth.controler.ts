@@ -65,6 +65,25 @@ const logOut = catchAsync(async(req: Request, res: Response, next: NextFunction)
         data: null
     })
 })
+// const deleteAccount = catchAsync(async(req: Request, res: Response, next: NextFunction)=> {
+//     res.clearCookie("accessToken", {
+//         httpOnly: true,
+//         secure: false,
+        
+//     })
+//     res.clearCookie("refreshToken", {
+//         httpOnly: true,
+//         secure: false,
+        
+//     })
+
+//      sendResponse(res, {
+//         statusCode: httpStatus.OK,
+//         success: true,
+//         message: "Your account has been deleted successfully",
+//         data: null
+//     })
+// })
 const googleCallBack = catchAsync(async(req: Request, res: Response, next: NextFunction)=> {
    let redirectUrl = ""
 
@@ -153,5 +172,6 @@ export const AuthControler = {
     resetPassword,
     forgotPassword,
     changePassword,
-    setPassword
+    setPassword,
+    // deleteAccount
 }

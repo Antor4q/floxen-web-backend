@@ -1,95 +1,36 @@
 import { Schema, model } from "mongoose";
-import { IDesign, DesignStatus, DesignType } from "./design.interface";
+import { IDesign, DesignStatus, DesignCategory } from "./design.interface";
+
+const fileAssetSchema = new Schema(
+  { url: String, key: String, size: Number },
+  { _id: false }
+);
 
 const designSchema = new Schema<IDesign>(
   {
-    title: {
-      type: String,
-      required: true,
-      trim: true,
-    },
+    title: { type: String, required: true, trim: true },
+    slug: { type: String, required: true, unique: true, index: true },
+    description: { type: String, required: true },
+    category: { type: String, enum: Object.values(DesignCategory), required: true, index: true },
+    thumbnail: { type: fileAssetSchema, required: true },
+    previewVideo: { type: fileAssetSchema, required: true },
 
-    slug: {
-      type: String
-    },
+    // list API te jate leak na hoy
+    prompt: { type: String, required: true, select: false },
+    sourceFile: { type: fileAssetSchema, required: true, select: false },
 
-    description: {
-      type: String,
-      trim: true,
-    },
+    tags: [String],
+    technologies: [String],
+    isFree: { type: Boolean, default: false },
+    status: { type: String, enum: Object.values(DesignStatus), default: DesignStatus.DRAFT, index: true },
+    author: { type: Schema.Types.ObjectId, ref: "User", required: true },
 
-    type: {
-      type: String,
-      enum: Object.values(DesignType),
-      required: true,
-    },
-
-    category: {
-      type: Schema.Types.ObjectId,
-      ref: "Category",
-      required: true,
-    },
-
-    tags: {
-      type: [String],
-      default: [],
-    },
-
-    technologies: {
-      type: [String],
-      default: [],
-    },
-
-    author: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-
-    previewVideo: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-
-    sourceFile: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-
-    prompt: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-
-    isFree: {
-      type: Boolean,
-      default: false,
-    },
-
-    status: {
-      type: String,
-      enum: Object.values(DesignStatus),
-      default: DesignStatus.DRAFT,
-    },
-
-    views: {
-      type: Number,
-      default: 0,
-      min: 0,
-    },
-
-    likesCount: {
-      type: Number,
-      default: 0,
-      min: 0,
-    },
+    views: { type: Number, default: 0 },
+    likesCount: { type: Number, default: 0 },
+    downloadsCount: { type: Number, default: 0 },
+    promptCopiesCount: { type: Number, default: 0 },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
 
