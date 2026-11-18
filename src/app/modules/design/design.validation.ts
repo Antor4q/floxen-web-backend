@@ -11,12 +11,22 @@ const techArray = z
   .max(10)
   .transform((arr) => [...new Set(arr)]);
 
+// Default chhara base fields (update er jonno safe)
+const baseShape = {
+  title: z.string().trim().min(3).max(100),
+  description: z.string().trim().min(10).max(500),
+  category: z.nativeEnum(DesignCategory),
+  prompt: z.string().trim().min(20).max(20000),
+  tags: tagArray,
+  technologies: techArray,
+  isFree: z.boolean(),
+  status: z.nativeEnum(DesignStatus),
+};
+
+// CREATE: default shoho
 export const createDesignSchema = z
   .object({
-    title: z.string().trim().min(3).max(100),
-    description: z.string().trim().min(10).max(500),
-    category: z.nativeEnum(DesignCategory),
-    prompt: z.string().trim().min(20).max(20000),
+    ...baseShape,
     tags: tagArray.default([]),
     technologies: techArray.default([]),
     isFree: z.boolean().default(false),
@@ -24,5 +34,5 @@ export const createDesignSchema = z
   })
   .strict();
 
-// Update e shudhu file pathale o cholbe, tai "at least one field" check service e
-export const updateDesignSchema = createDesignSchema.partial().strict();
+// UPDATE: shob optional, default nai. File o ashte pare, tai "at least one" check service e
+export const updateDesignSchema = z.object(baseShape).partial().strict();

@@ -2,17 +2,44 @@ import { Router } from "express";
 import { checkAuth } from "../../middleWars/checkAuth";
 import { Role } from "../user/user.interface";
 import { validateRequest } from "../../utils/validatedRequest";
-
+import { designUpload } from "../../middleWars/designUpload";
 import { DesignControler } from "./design.controler";
-import { updateCategoryValidationSchema } from "../categories/category.validation";
-import { createDesignSchema } from "./design.validation";
+import { createDesignSchema, updateDesignSchema } from "./design.validation";
 
-const router = Router()
+const router = Router();
 
-router.post("/create", checkAuth(Role.ADMIN, Role.SUPER_ADMIN), validateRequest(createDesignSchema), DesignControler.createDesign)
-router.get("/all-design", DesignControler.getAllDesign)
-router.get("/single-design/:id", DesignControler.getSingleDesign)
-router.patch("/update-design/:id", checkAuth(Role.ADMIN, Role.SUPER_ADMIN), validateRequest(updateCategoryValidationSchema), DesignControler.updateDesign)
-router.delete("/delete-design/:id", checkAuth(Role.ADMIN, Role.SUPER_ADMIN), DesignControler.deleteDesign)
+// ---------- Admin ----------
+router.post(
+  "/create",
+  checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
+  designUpload, // 1. multer age (req.body.data + files)
+  validateRequest(createDesignSchema), // 2. JSON parse + zod
+  DesignControler.createDesign
+);
 
-export const DesignRoutes = router
+router.patch(
+  "/update-design/:id",
+  checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
+  designUpload,
+  validateRequest(updateDesignSchema),
+  DesignControler.updateDesign
+);
+
+router.delete(
+  "/delete-design/:id",
+  checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
+  DesignControler.deleteDesign
+);
+
+// ---------- Public ----------
+router.get("/all-design", DesignControler.getAllDesign);
+router.get("/single-design/:slug", DesignControler.getSingleDesign);
+
+// ---------- Logged-in user ----------
+// router.get(
+//   "/download/:slug",
+//   checkAuth(...Object.values(Role)),
+//   DesignControler.downloadDesign
+// );
+
+export const DesignRoutes = router;

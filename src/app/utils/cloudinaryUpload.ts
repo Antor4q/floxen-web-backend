@@ -19,13 +19,10 @@ const CONFIG = {
   source: {
     resource_type: "raw",
     folder: "designs/source",
-    type: "authenticated", // private, direct URL e access hobe na
+    type: "authenticated", // private
   },
 } as const;
 
-// ------------------------------------------------------------------
-// UPLOAD
-// ------------------------------------------------------------------
 export const uploadToCloudinary = (
   file: Express.Multer.File,
   kind: AssetKind
@@ -38,7 +35,6 @@ export const uploadToCloudinary = (
         if (error || !result) {
           return reject(error ?? new Error("Cloudinary upload failed"));
         }
-
         resolve({
           url: result.secure_url,
           key: result.public_id,
@@ -48,9 +44,6 @@ export const uploadToCloudinary = (
     );
   });
 
-// ------------------------------------------------------------------
-// DELETE (fail korleo app crash korbe na, shudhu log hobe)
-// ------------------------------------------------------------------
 export const deleteFromCloudinary = async (
   asset: IFileAsset | undefined,
   kind: AssetKind
@@ -70,13 +63,8 @@ export const deleteFromCloudinary = async (
   }
 };
 
-// ------------------------------------------------------------------
-// TEMP FILE CLEANUP (multer er disk file)
-// ------------------------------------------------------------------
 export const removeTempFiles = async (files: Express.Multer.File[]) => {
-  await Promise.all(
-    files.map((file) => fs.unlink(file.path).catch(() => {
-        // 
-    }))
-  );
+  await Promise.all(files.map((file) => fs.unlink(file.path).catch(() => {
+    // 
+  })));
 };
